@@ -1,0 +1,127 @@
+{% if site.duoshuo_shortname %}
+<!-- 多说评论框 start -->
+<div class="ds-thread" data-thread-key="{{ site.url }}{{ page.url }}" data-title="{{page.title}}" data-url="{{ site.url }}{{ page.url }}"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    var duoshuoQuery = {
+        short_name: "{{site.duoshuo_shortname}}"
+    };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+{% endif %}
+
+{% if site.disqus_shortname %}
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = '{{ site.url }}{{ page.url }}'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '{{ site.url }}{{ page.url }}'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//{{site.disqus_shortname}}.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+{% endif %}
+
+<!-- GitTalk start 👉 https://github.com/gitalk/gitalk/blob/master/readme-cn.md -->
+<!-- Error: API rate limit exceeded for 45.251.21.248. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.). -->
+<!-- 加一个 token dbdfa7fea5ff40e6b0d7e05aba34c350b85800e9 -->
+<!-- id: '{{page.title}}' -->
+{% if site.gitalk_shortname %}
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- https://github.com/qiubaiying/qiubaiying.github.io/blob/master/_layouts/post.html -->
+<script src="{{ site.baseurl }}/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script>
+   var gitalk = new Gitalk({
+        clientID: '39b0879ffc3545575107',
+        clientSecret: '53ece126ca00360c719bb9aaa0cfe56c88eefbaf',
+        repo: 'javakam.github.io',
+        owner: 'javakam',
+        admin: ['javakam'],
+        distractionFreeMode: true,
+        // number: 1,
+        // labels: ['gitalk','comment'],
+        // title: '{{page.title}}',
+        id: '{{page.title}}'.substring(0,50),
+        perPage: 15
+    })
+
+    gitalk.render('gitalk-container')
+</script>
+{% endif %}
+<!-- GitTalk end -->
+
+<!-- vssue start -->
+<!-- 🌈https://vssue.js.org/guide/github.html -->
+{% if site.vssue_shortname %}
+<!-- style sheet of Vssue -->
+<link rel="stylesheet" href="https://unpkg.com/vssue/dist/vssue.min.css">
+<div id="vssue"></div>
+
+<!-- Introduce Vue first -->
+<!-- vue runtime build (runtime only)  -->
+<script src="https://unpkg.com/vue/dist/vue.runtime.min.js"></script>
+<!-- OR: vue full build (runtime + compiler)  -->
+<!-- <script src="https://unpkg.com/vue/dist/vue.min.js"></script> -->
+
+<!-- Introduce Vssue after Vue -->
+<!-- Vssue Github build -->
+<script src="https://unpkg.com/vssue/dist/vssue.github.min.js"></script>
+<!-- OR: Vssue Gitlab build -->
+<!-- <script src="https://unpkg.com/vssue/dist/vssue.gitlab.min.js"></script> -->
+<!-- OR: Vssue Bitbucket build -->
+<!-- <script src="https://unpkg.com/vssue/dist/vssue.bitbucket.min.js"></script> -->
+<!-- OR: Vssue Gitee build -->
+<!-- <script src="https://unpkg.com/vssue/dist/vssue.gitee.min.js"></script> -->
+
+<!-- Use Vssue as a Vue component -->
+<!-- use render function for vue runtime build -->
+<script>
+  new Vue({
+    el: '#vssue',
+
+    // 配置文档 👉 https://vssue.js.org/zh/options/#issueid
+    render: h => h('Vssue', {
+      props: {
+        // here set the title of issue of current page
+        title: 'BlogComments',
+
+        // here set the options for your OAuth App
+        options: {
+          owner: 'javakam',
+          repo: 'javakam',
+          autoCreateIssue: true,
+          clientId: '39b0879ffc3545575107',
+          clientSecret: '53ece126ca00360c719bb9aaa0cfe56c88eefbaf', // only required for some of the platforms
+        },
+      }
+    })
+  })
+</script>
+{% endif %}
+<!-- vssue end -->

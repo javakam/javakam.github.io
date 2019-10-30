@@ -1,0 +1,438 @@
+---
+layout: default
+---
+
+<div class="page clearfix" post>
+    <div class="left">
+        <h1>{{page.title}}</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>{{ page.date | date: "%F" }}
+            </div>
+
+            <div class="label-card">
+                {% if page.author %}<i class="fa fa-user"></i>{{ page.author }}
+                {% endif %}
+            </div>
+
+            <div class="label-card">
+                {% if page.meta %}<i class="fa fa-key"></i>{{ page.meta }}  {% endif %}
+            </div>
+
+            <div class="label-card">
+            {% include category.html %}
+            </div>
+
+            <div class="label-card">
+            {% include tag.html %}
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        {{content}}
+        </article>
+        <hr>
+
+        {% assign hasSimilar = '' %}
+        {% for post in site.related_posts %}
+            {% assign postHasSimilar = false %}
+            {% for tag in post.tags %}
+                {% for thisTag in page.tags %}
+                    {% if postHasSimilar == false and hasSimilar.size < 6 and post != page and tag == thisTag %}
+                        {% if hasSimilar.size == 0 %}
+                        <h2 id="similar_posts">相关文章</h2>
+                        <ul>
+                        {% endif %}
+                        <li class="relatedPost">
+                            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}
+                            {% if post.series %}
+                                (Series: {{ post.series }})
+                            {% endif %}
+                            </a>
+                        </li>
+                        {% capture hasSimilar %}{{ hasSimilar }}*{% endcapture %}
+                        {% assign postHasSimilar = true %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+        {% if hasSimilar.size > 0 %}
+            </ul>
+        {% endif %}
+
+        {% include previousAndNext.html %}
+
+        <h2 id="comments">评论</h2>
+        {% include comments.html %}
+
+
+    </div>
+    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <div class="right">
+        <div class="wrap">
+            <!-- Content -->
+            <div class="side content">
+                <!-- <div>
+                    内容
+                </div> -->
+                <!-- 原生样式的目录 -->
+                <!-- <ul id="content-side" class="content-ul">
+                    <!-- {% if hasSimilar.size > 0 %}
+                    <li><a href="#similar_posts">相关文章</a></li>
+                    {% endif %}
+                    <li><a href="#comments">评论</a></li> -->
+                <!-- </ul> -->
+            </div>
+            <!-- 其他div框放到这里 -->
+            <div id="mytoc" class="side"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * target _blank
+ */
+(function() {
+    var aTags = document.querySelectorAll('article a:not([id])')
+    for (var i = 0; i < aTags.length; i++) {
+        aTags[i].setAttribute('target', '_blank')
+    }
+}());
+</script>
+<script src="{{ "/js/pageContent.js " | prepend: site.baseurl }}" charset="utf-8"></script>
+
+
+
+<!-- 目录 方案一-->
+<!-- 参考1👉 https://blog.csdn.net/WuLex/article/details/70854555 -->
+<!-- 参考2👉 http://jianganglu.github.io/2015/06/03/markdown-catelog/ -->
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+ //是否显示导航栏
+ var showNavBar = true;
+ //是否展开导航栏
+ var expandNavBar = true;
+ //是否给标题自动增加序号
+ var addSNToTitle = false;
+
+ $(document).ready(function(){
+    var h1s = $("body").find("h1");
+    var h2s = $("body").find("h2");
+    var h3s = $("body").find("h3");
+    var h4s = $("body").find("h4");
+    var h5s = $("body").find("h5");
+    var h6s = $("body").find("h6");
+
+    var headCounts = [h1s.length, h2s.length, h3s.length, h4s.length, h5s.length, h6s.length];
+    var vH1Tag = null;
+    var vH2Tag = null;
+    var vH3Tag = null;
+    var vH4Tag = null;
+    var vH5Tag = null;
+    var vH6Tag = null;
+
+    if(headCounts.length==0){
+	     return;
+    }
+    for(var i = 0; i < headCounts.length; i++){
+	     if(headCounts[i] > 0){
+	        if(vH1Tag == null){
+		          vH1Tag = 'h' + (i + 1);
+	        }else if(vH2Tag == null){
+		          vH2Tag = 'h' + (i + 1);
+	        }else if(vH3Tag == null){
+		          vH3Tag = 'h' + (i + 1);
+	        }else if(vH4Tag == null){
+		          vH4Tag = 'h' + (i + 1);
+	        }else if(vH5Tag == null){
+		          vH5Tag = 'h' + (i + 1);
+	        }else if(vH6Tag == null){
+		          vH6Tag = 'h' + (i + 1);
+		          break;
+	        }
+	     }
+    }
+
+    $("#mytoc").prepend(//.site
+    '<div class="BlogAnchor">' +
+        // 关闭按钮
+  	  	// '<span style="color:red;position:absolute;top:-6px;left:0px;cursor:pointer;" onclick="$(\'.BlogAnchor\').hide();">×</span>' +
+        '<p>'  +
+            '<b id="AnchorContentToggle" title="收起" style="cursor:pointer;">目录▲</b>' +
+        '</p>' +
+  	    '<div class="AnchorContent" id="AnchorContent"> </div>' +
+    '</div>' );
+
+    var vH1Index = 0;
+    var vH2Index = 0;
+    var vH3Index = 0;
+    var vH4Index = 0;
+    var vH5Index = 0;
+    var vH6Index = 0;
+    $("body").find(
+        vH1Tag +(vH2Tag != null ? (','+ vH2Tag) : '')
+        +(vH3Tag != null ? (','+ vH3Tag) : '')
+        +(vH4Tag != null ? (','+ vH4Tag) : '')
+        +(vH5Tag != null ? (','+ vH5Tag) : '')
+        +(vH6Tag != null ? (','+ vH6Tag) : '')
+    ).each(function(i,item){
+        	var id = '';
+        	var name = '';
+        	var tag = $(item).get(0).tagName.toLowerCase();
+        	var className = '';
+        	if(tag == vH1Tag){
+            	if(addSNToTitle){
+                id = name = ++vH1Index;
+              }else {
+                id = ++vH1Index;
+              }
+        	    vH2Index = 0;
+        	    className = 'item_h1';
+        	}else if(tag == vH2Tag){
+        	    id = vH1Index + '_' + ++vH2Index;
+        	    name = vH1Index + '.' + vH2Index;
+        	    className = 'item_h2';
+        	}else if(tag == vH3Tag){
+        	    id = vH1Index + '_' + vH2Index + '_' + ++vH3Index;
+              name = vH1Index + '.' + vH2Index+ '.'+ vH3Index;
+        	    className = 'item_h3';
+        	}else if(tag == vH4Tag){
+        	    id = vH1Index + '_' + vH2Index + '_' + vH3Index + '_' + ++vH4Index;
+              name = vH1Index + '.' + vH2Index+ '.'+ vH3Index + '.' + vH4Index;
+        	    className = 'item_h4';
+        	}else if(tag == vH5Tag){
+        	    id = vH1Index + '_' + vH2Index + '_' + vH3Index + '_' + vH4Index + '_' + ++vH5Index;
+              name = vH1Index + '.' + vH2Index+ '.'+ vH3Index + '.' + vH4Index + '.' + vH5Index;
+        	    className = 'item_h5';
+        	}else if(tag == vH6Tag){
+        	    id = vH1Index + '_' + vH2Index + '_' + vH3Index + '_' + vH4Index + '_' + vH5Index + '_' + ++vH6Index;
+              name = vH1Index + '.' + vH2Index+ '.'+ vH3Index + '.' + vH4Index + '.' + vH5Index + '.' + vH6Index;
+        	    className = 'item_h6';
+        	}
+
+        	$(item).attr("id","wow" + id);
+        	$(item).addClass("wow_head");
+        	var originText = $(item).text();
+          // if(originText.length>10){
+          //    originText=originText.substring(0,12);
+          // }
+
+          $("#AnchorContent").css('max-height', ($(window).height() - 180) + 'px');
+      		if(addSNToTitle){
+      		 	$(item).text(name + '. ' + originText);
+            $("#AnchorContent").append('<li><a class="nav_item '+className+' anchor-link" onclick="return false;" href="#" link="#wow'+id+'">'+name+" · "+originText+'</a></li>');
+      	  }else {
+            $("#AnchorContent").append('<li><a class="nav_item '+className+' anchor-link" onclick="return false;" href="#" link="#wow'+id+'">'+originText+'</a></li>');
+          }
+    });
+
+    $("#AnchorContentToggle").click(function(){
+    	  var text = $(this).html();
+    	  if(text=="目录▲"){
+    	    $(this).html("目录▼");
+    	    $(this).attr({"title":"展开"});
+    	  }else{
+    	    $(this).html("目录▲");
+    	    $(this).attr({"title":"收起"});
+    	  }
+
+    	  $("#AnchorContent").toggle();
+    });
+
+    $(".anchor-link").click(function(){
+	     $("html,body").animate({scrollTop: $($(this).attr("link")).offset().top}, 500);
+    });
+
+    var headerNavs = $(".BlogAnchor li .nav_item");
+	  var headerTops = [];
+	  $(".wow_head").each(function(i, n){
+		    headerTops.push($(n).offset().top);
+	  });
+
+	  $(window).scroll(function(){
+  		var scrollTop = $(window).scrollTop();
+  		$.each(headerTops, function(i, n){
+    			var distance = n - scrollTop;
+    			if(distance >= 0){
+      				$(".BlogAnchor li .nav_item.current").removeClass('current');
+      				$(headerNavs[i]).addClass('current');
+      				return false;
+    			}
+  		});
+	});
+
+	if(!showNavBar){
+		$('.BlogAnchor').hide();
+	}
+
+	if(!expandNavBar){
+		$(this).html("目录▼");
+	  $(this).attr({"title":"展开"});
+		$("#AnchorContent").hide();
+	}
+});
+</script>
+
+<style>
+  /*导航 ✨与博客整体风格统一*/
+  /* .BlogAnchor {
+    background: #F8F8F8;
+    padding: 10px;
+    line-height: 150%;
+    position: fixed;
+    right: 10px;
+    top: 28px;
+    border: 1px solid #5F8CA6;
+  } */
+
+  .BlogAnchor {
+    background: #F8F8F8;
+    padding: 10px;
+    line-height: 150%;
+    position: inherit;
+    right: 10px;
+    top: 28px;
+    /* border: 1px solid #5F8CA6; */
+    box-shadow: 0 1px 3px 1px rgba(0,0,0,0.3), 0 0 30px rgba(10,10,0,0.1) inset;
+  }
+
+  .BlogAnchor p {
+    font-size: 16px;
+    color: #5F8CA6;
+    margin: 0 0 0.3rem 0;
+    text-align: right;
+  }
+  .BlogAnchor .AnchorContent {
+    padding: 5px 0px;
+    overflow: auto;
+  }
+  .BlogAnchor li{
+    text-indent: 0.5rem;
+    font-size: 13px;
+    list-style: none;
+  }
+  .BlogAnchor li .nav_item{
+    padding: 3px;
+  }
+  .BlogAnchor li .item_h1{
+    margin-left: 0rem;
+	  font-size: 0.8rem;
+  }
+  .BlogAnchor li .item_h2{
+    margin-left: 0.8rem;
+    font-size: 0.7rem;
+  }
+  .BlogAnchor li .item_h3{
+    margin-left: 1.6rem;
+    font-size: 0.6rem;
+  }
+  .BlogAnchor li .item_h4{
+    margin-left: 2.3rem;
+    font-size: 0.6rem;
+  }
+  .BlogAnchor li .item_h5{
+    margin-left: 3.1rem;
+    font-size: 0.6rem;
+  }
+  .BlogAnchor li .item_h6{
+    margin-left: 3.9rem;
+    font-size: 0.6rem;
+  }
+  .BlogAnchor li .nav_item.current{
+    color: white;
+    background-color: #5F8CA6;
+  }
+  #AnchorContentToggle {
+    font-size: 12px;
+    font-weight: normal;
+    color: #FFF;
+    display: inline-block;
+    line-height: 20px;
+    background: #5F8CA6;
+    font-style: normal;
+    padding: 1px 8px;
+  }
+  .BlogAnchor a:hover {
+    color: #5F8CA6;
+  }
+  .BlogAnchor a {
+    text-decoration: none;
+  }
+</style>
+
+<!--目录 方案2 效果更好,但是需要引入一些文件,没有方案一纯粹 -->
+<!-- 参考项目👉https://github.com/i5ting/i5ting_ztree_toc -->
+<!-- <link href="/assets/toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+<link href="/assets/toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+<link href="/assets/toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+
+<style>
+					pre {
+					    counter-reset: line-numbering;
+					    border: solid 1px #d9d9d9;
+					    border-radius: 0;
+					    background: #fff;
+					    padding: 0;
+					    line-height: 23px;
+					    margin-bottom: 30px;
+					    white-space: pre;
+					    overflow-x: auto;
+					    word-break: inherit;
+					    word-wrap: inherit;
+					}
+
+					pre a::before {
+					  content: counter(line-numbering);
+					  counter-increment: line-numbering;
+					  padding-right: 1em; /* space after numbers */
+					  width: 25px;
+					  text-align: right;
+					  opacity: 0.7;
+					  display: inline-block;
+					  color: #aaa;
+					  background: #eee;
+					  margin-right: 16px;
+					  padding: 2px 10px;
+					  font-size: 13px;
+					  -webkit-touch-callout: none;
+					  -webkit-user-select: none;
+					  -khtml-user-select: none;
+					  -moz-user-select: none;
+					  -ms-user-select: none;
+					  user-select: none;
+					}
+
+					pre a:first-of-type::before {
+					  padding-top: 10px;
+					}
+
+					pre a:last-of-type::before {
+					  padding-bottom: 10px;
+					}
+
+					pre a:only-of-type::before {
+					  padding: 10px;
+					}
+
+					.highlight { background-color: #ffffcc } /* RIGHT */
+					</style>
+</article></div>
+
+
+	<script type="text/javascript" src="/assets/toc/js/jquery-1.4.4.min.js"></script>
+			<script type="text/javascript" src="/assets/toc/js/jquery.ztree.all-3.5.min.js"></script>
+			<script type="text/javascript" src="/assets/toc/js/ztree_toc.js"></script>
+      <script type="text/javascript" src="/assets/toc_conf.js"></script>
+
+		<script type="text/javascript" >
+							$(document).ready(function(){
+								$('#tree').ztree_toc({
+									// is_auto_number:true,
+									documment_selector:'.markdown-body'
+								});
+							});
+						</script> -->

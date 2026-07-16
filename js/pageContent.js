@@ -1,164 +1,121 @@
 /* jshint asi:true */
 
-/**
- * [fixSidebar description]
- * 滚轮滚到一定位置时，将 sidebar-wrap 添加 fixed 样式
- * 反之，取消样式
- */
 (function() {
-    if (window.innerWidth > 770) {
+  var sidebarWrap = document.querySelector('.right > .wrap')
+  var contentList = document.querySelector('#content-side')
+  var anchorBtn = document.querySelector('.anchor')
+  var rightDiv = document.querySelector('.page > .right')
 
-        var sidebarWrap = document.querySelector('.right>.wrap')
+  if (!sidebarWrap || !contentList) return
 
-        //fix 之后百分比宽度会失效，这里用js赋予宽度
-        sidebarWrap.style.width = sidebarWrap.offsetWidth + "px"
-        window.onscroll = function() {
+  buildTableOfContents(contentList)
 
-            // 页面顶部滚进去的距离
-            var scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop)
-
-            // 页面底部滚进去的距离
-            var htmlHeight = Math.max(document.body.clientHeight, document.documentElement.clientHeight)
-                // console.log(htmlHeight);
-            var scrollBottom = htmlHeight - window.innerHeight - scrollTop
-
-            if (scrollTop < 53) {
-                sidebarWrap.classList.remove('fixed')
-                sidebarWrap.classList.remove('scroll-bottom')
-            } else if (scrollBottom >= (190 - 38)) {
-                sidebarWrap.classList.remove('scroll-bottom')
-                sidebarWrap.classList.add('fixed')
-            } else if (isMaxHeight()) { //content 达到maxHeight
-                sidebarWrap.classList.remove('fixed')
-                sidebarWrap.classList.add('scroll-bottom')
-            }
-        }
-        setContentMaxHeightInPC() //设置目录最大高度(PC端)
-    }
-    moveTOC() //将Content内容转移
-}());
-
-/**
- * 设置目录最大高度
- * var contentMaxHeight = windowHeight - 77 - 60
- */
-function setContentMaxHeightInPC() {
-    var windowHeight = window.innerHeight
-    var contentUl = document.querySelector('.content-ul')
-    var contentMaxHeight = windowHeight - 77 - 60
-    contentUl.style.maxHeight = contentMaxHeight + 'px'
-}
-
-/**
- * 达到最大高度
- * @return {Boolean} [description]
- */
-function isMaxHeight() {
-    var windowHeight = window.innerHeight
-    var contentUl = document.querySelector('.content-ul')
-    var contentMaxHeight = windowHeight - 77 - 60
-    var contentHeight = contentUl.offsetHeight
-    return contentMaxHeight === contentHeight
-        // console.log(contentMaxHeight);
-        // console.log(contentHeight);
-}
-
-
-//-------------mobile--------------
-/**
- * 屏幕宽度小于770px时，点击锚点按钮，弹出目录框
- * @param  {[type]} function( [description]
- * @return {[type]}           [description]
- */
-(function() {
-    if (window.innerWidth <= 770) {
-        var anchorBtn = document.querySelector('.anchor')
-        var rightDiv = document.querySelector('.right')
-
-        /**
-         * 监听锚点按钮
-         */
-        anchorBtn.onclick = function(e) {
-            e.stopPropagation()
-            rightDiv.classList.add('right-show')
-            anchorBtn.classList.add('anchor-hide')
-        }
-
-        //监听body，点击body，隐藏Content
-        document.querySelector('body').addEventListener('click', function() {
-            rightDiv.classList.remove('right-show')
-            anchorBtn.classList.remove('anchor-hide')
-        })
-
-        ancherPostion(anchorBtn, rightDiv) //目录锚的位置固定
-        setContentMaxHeight() //设置目录最大高度
-    }
-}());
-
-/**
- * 目录锚的位置固定
- */
-function ancherPostion(anchorBtn, rightDiv) {
+  if (window.innerWidth > 770) {
+    setDesktopSidebarWidth(sidebarWrap)
+    setContentMaxHeight(contentList, 137)
     window.addEventListener('scroll', function() {
-        // console.log('scroll');
-        var top = anchorBtn.getBoundingClientRect().top
-            // console.log(top);
-        var scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop)
-        if (scrollTop > 50) {
-            anchorBtn.style.top = '20px'
-            rightDiv.style.top = '20px'
-        } else {
-            anchorBtn.style.top = '76px'
-            rightDiv.style.top = '76px'
-        }
+      updateDesktopSidebar(sidebarWrap, contentList)
     })
-}
+    window.addEventListener('resize', function() {
+      setDesktopSidebarWidth(sidebarWrap)
+      setContentMaxHeight(contentList, 137)
+    })
+  } else if (anchorBtn && rightDiv) {
+    setContentMaxHeight(contentList, 180)
 
-/**
- * 设置目录最大高度
- */
-function setContentMaxHeight() {
-    var windowHeight = window.innerHeight
-    var contentUl = document.querySelector('.content-ul')
-    var contentMaxHeight = windowHeight - 180
-    contentUl.style.maxHeight = contentMaxHeight + 'px'
-}
-
-//-------------post Content----------------------
-//将Content内容转移
-function moveTOC() {
-    if (document.querySelector('#markdown-toc') !== null) {
-        var TOCString = document.querySelector('#markdown-toc').innerHTML
-        var contentUl = document.querySelector('#content-side')
-        contentUl.insertAdjacentHTML('afterbegin', TOCString) //插入字符串
-
-        // if (!isAndroidWechatBrowser()) {
-
-            //添加scroll样式，为了平滑滚动
-            //add class "scroll", for smooth scroll
-            var aTags = document.querySelectorAll('#content-side a')
-
-            //add class for everyone
-            // aTags.forEach(function () {
-            //     console.log(this);
-            // })
-            for (var i = 0; i < aTags.length; i++) {
-                // if (!aTags[i].classList.contains('scroll')) {
-                //     aTags[i].classList.add('scroll')
-                // }
-                if (!aTags[i].hasAttribute('data-scroll')) {
-                  aTags[i].setAttribute('data-scroll','');
-                }
-            }
-        // }
+    function closeMobileToc() {
+      rightDiv.classList.remove('right-show')
+      anchorBtn.classList.remove('anchor-hide')
+      anchorBtn.setAttribute('aria-expanded', 'false')
     }
+
+    anchorBtn.addEventListener('click', function(event) {
+      event.stopPropagation()
+      rightDiv.classList.add('right-show')
+      anchorBtn.classList.add('anchor-hide')
+      anchorBtn.setAttribute('aria-expanded', 'true')
+    })
+
+    rightDiv.addEventListener('click', function(event) {
+      event.stopPropagation()
+    })
+
+    contentList.addEventListener('click', function(event) {
+      if (event.target.closest('a')) closeMobileToc()
+    })
+
+    document.body.addEventListener('click', function() {
+      closeMobileToc()
+    })
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && rightDiv.classList.contains('right-show')) {
+        closeMobileToc()
+        anchorBtn.focus()
+      }
+    })
+
+    window.addEventListener('scroll', function() {
+      var top = Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+      anchorBtn.style.top = top > 50 ? '20px' : '76px'
+      rightDiv.style.top = top > 50 ? '20px' : '76px'
+    })
+  }
+}())
+
+function buildTableOfContents(contentList) {
+  var markdownToc = document.querySelector('#markdown-toc')
+  if (markdownToc) {
+    contentList.innerHTML = markdownToc.innerHTML
+  } else {
+    var headings = document.querySelectorAll('article h1, article h2, article h3, article h4, article h5, article h6')
+    for (var i = 0; i < headings.length; i++) {
+      var heading = headings[i]
+      if (!heading.id) heading.id = 'section-' + (i + 1)
+
+      var item = document.createElement('li')
+      var link = document.createElement('a')
+      link.href = '#' + heading.id
+      link.textContent = heading.textContent
+      link.className = 'toc-' + heading.tagName.toLowerCase()
+      link.setAttribute('data-scroll', '')
+      item.appendChild(link)
+      contentList.appendChild(item)
+    }
+  }
+
+  var links = contentList.querySelectorAll('a')
+  for (var j = 0; j < links.length; j++) {
+    links[j].setAttribute('data-scroll', '')
+  }
+
+  if (!contentList.children.length) {
+    var side = contentList.closest('.side')
+    if (side) side.style.display = 'none'
+  }
 }
 
-/**
- * 判断安卓版微信浏览器
- * @return {Boolean} [description]
- */
-function isAndroidWechatBrowser() {
-    var ua = navigator.userAgent.toLowerCase()
-    return /micromessenger/.test(ua) && /android/.test(ua2)
+function setDesktopSidebarWidth(sidebarWrap) {
+  sidebarWrap.style.width = ''
+  sidebarWrap.style.width = sidebarWrap.offsetWidth + 'px'
+}
+
+function setContentMaxHeight(contentList, offset) {
+  contentList.style.maxHeight = Math.max(160, window.innerHeight - offset) + 'px'
+}
+
+function updateDesktopSidebar(sidebarWrap, contentList) {
+  var scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+  var documentHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
+  var scrollBottom = documentHeight - window.innerHeight - scrollTop
+
+  if (scrollTop < 53) {
+    sidebarWrap.classList.remove('fixed', 'scroll-bottom')
+  } else if (scrollBottom >= 152) {
+    sidebarWrap.classList.remove('scroll-bottom')
+    sidebarWrap.classList.add('fixed')
+  } else if (contentList.scrollHeight >= contentList.clientHeight) {
+    sidebarWrap.classList.remove('fixed')
+    sidebarWrap.classList.add('scroll-bottom')
+  }
 }

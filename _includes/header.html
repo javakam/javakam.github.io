@@ -1,15 +1,15 @@
 <header id="top">
     <div class="wrapper">
-        <a href="{{ site.baseurl }}/" class="brand">{{ site.title }}</a>
+        <a href="{{ '/' | relative_url }}" class="brand">{{ site.title }}</a>
         <small>{{site.brief-intro}}</small>
-        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <button id="headerMenu" class="menu" type="button" aria-label="打开导航菜单" aria-controls="headerNav" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i></button>
         <nav id="headerNav">
             <ul>
                 <li>
                     {% if page.url == '/' %}
-                    <a class="active" href="{{site.baseurl}}/">
+                    <a class="active" href="{{ '/' | relative_url }}">
                         {% else %}
-                    <a href="{{site.baseurl}}/">
+                    <a href="{{ '/' | relative_url }}">
                     {% endif %}
                         <i class="fa fa-home"></i>首页
                     </a>
@@ -19,9 +19,9 @@
                     {% if my_page.type == 'page' %}
                     <li>
                         {% if my_page.url == page.url %}
-                        <a class="active" href="{{ my_page.url | prepend: site.baseurl }}">
+                        <a class="active" href="{{ my_page.url | relative_url }}">
                             {% else %}
-                        <a href="{{ my_page.url | prepend: site.baseurl }}">
+                        <a href="{{ my_page.url | relative_url }}">
                         {% endif %}
                             <i class="fa fa-{{my_page.icon}}"></i>{{ my_page.title }}
                         </a>

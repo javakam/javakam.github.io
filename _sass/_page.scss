@@ -139,6 +139,19 @@
             padding-right: 10px;
             line-height: 1.6;
             padding-left: 25px;
+            a {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .toc-h3 {
+                padding-left: 12px;
+            }
+            .toc-h4,
+            .toc-h5,
+            .toc-h6 {
+                padding-left: 24px;
+            }
             ul {
                 padding-left: 20px;
             }

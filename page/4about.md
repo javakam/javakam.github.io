@@ -11,7 +11,7 @@ type: page
 
 ## 关于我
 
-<iframe src="https://github.com/javakam" style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>
+Android Dev Engineer
 
 ## 联系我
 
@@ -19,7 +19,3 @@ type: page
 * email：jooybao@foxmail.com
 
 ## 友情链接
-
-## 评论
-
-{% include comments.html %}

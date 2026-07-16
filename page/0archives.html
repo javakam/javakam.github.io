@@ -30,7 +30,7 @@ type: page
                 <time>
                 {{ post.date | date:"%F" }} {{ post.date | date: "%a" }}.
                 </time>
-                <a class="title" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+                <a class="title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
 
                 {% include category.html %}
                 {% include tag.html %}
@@ -39,7 +39,7 @@ type: page
           {% endfor %}
         </ul>
     </div>
-    <button class="anchor"><i class="fa fa-anchor"></i></button>
+    <button class="anchor" type="button" aria-label="打开页面目录" aria-controls="content-side" aria-expanded="false"><i class="fa fa-anchor" aria-hidden="true"></i></button>
     <div class="right">
         <div class="wrap">
 
@@ -66,4 +66,4 @@ type: page
         </div>
     </div>
 </div>
-<script src="{{ "/js/pageContent.js " | prepend: site.baseurl }}" charset="utf-8"></script>
+<script src="{{ '/js/pageContent.js' | relative_url }}" charset="utf-8"></script>

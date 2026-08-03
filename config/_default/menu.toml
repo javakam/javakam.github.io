@@ -1,0 +1,16 @@
+[[social]]
+    identifier = "github"
+    name = "GitHub"
+    url = "https://github.com/javakam"
+
+    [social.params]
+        icon = "brand-github"
+        newTab = true
+
+[[social]]
+    identifier = "email"
+    name = "Email"
+    url = "mailto:jooybao@foxmail.com"
+
+    [social.params]
+        icon = "messages"

@@ -1,0 +1,28 @@
+baseURL = "https://javakam.github.io/"
+locale = "zh-cn"
+defaultContentLanguage = "zh"
+hasCJKLanguage = true
+title = "风之旅人"
+theme = "hugo-theme-stack"
+enableRobotsTXT = true
+disablePathToLower = true
+
+[pagination]
+    pagerSize = 8
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+    page = "/:slug/"
+
+[taxonomies]
+    category = "categories"
+    tag = "tags"
+
+[outputs]
+    home = ["HTML", "RSS"]
+    section = ["HTML", "RSS"]
+    taxonomy = ["HTML", "RSS"]
+    term = ["HTML", "RSS"]
+
+[outputFormats.RSS]
+    baseName = "feed"

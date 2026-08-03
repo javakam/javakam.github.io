@@ -1,6 +1,7 @@
-_site
-.sass-cache
-.jekyll-metadata
+public
+resources
+.hugo_build.lock
+assets/jsconfig.json
 .vscode
 .idea
 .DS_Store

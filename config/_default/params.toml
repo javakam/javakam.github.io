@@ -1,0 +1,58 @@
+mainSections = ["post"]
+rssFullContent = false
+favicon = "/favicon.ico"
+
+[footer]
+    since = 2019
+    customText = "记录与分享 Android、Kotlin、Java 和后端开发实践。"
+
+[dateFormat]
+    published = "2006年1月2日"
+    lastUpdated = "2006年1月2日"
+
+[sidebar]
+    emoji = "💻"
+    subtitle = "Android Dev Engineer"
+    avatar = "img/avatar.jpg"
+
+[article]
+    headingAnchor = true
+    math = false
+    toc = true
+    readingTime = true
+
+    [article.list]
+        showTags = true
+
+    [article.license]
+        enabled = true
+        default = "本文采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans) 许可协议。"
+
+[widgets]
+    homepage = [
+        { type = "search" },
+        { type = "archives", params = { limit = 5 } },
+        { type = "categories", params = { limit = 10 } },
+        { type = "tag-cloud", params = { limit = 20 } },
+    ]
+    page = [{ type = "toc" }]
+
+[comments]
+    enabled = false
+
+[colorScheme]
+    toggle = true
+    default = "auto"
+
+[imageProcessing]
+    autoOrient = true
+
+    [imageProcessing.external]
+        timeout = "10s"
+
+    [imageProcessing.content]
+        widths = [800, 1600, 2400]
+        enabled = true
+
+    [imageProcessing.thumbnail]
+        enabled = true

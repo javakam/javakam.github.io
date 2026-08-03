@@ -7,72 +7,130 @@ function Read-RepoFile([string]$RelativePath) {
     return Get-Content -Raw -LiteralPath (Join-Path $repoRoot $RelativePath)
 }
 
-function Assert-Matches([string]$Name, [string]$Content, [string]$Pattern) {
-    if ($Content -notmatch $Pattern) {
+function Assert-True([string]$Name, [bool]$Condition) {
+    if (-not $Condition) {
         $failures.Add("FAIL: $Name")
     }
+}
+
+function Assert-Matches([string]$Name, [string]$Content, [string]$Pattern) {
+    Assert-True $Name ($Content -match $Pattern)
 }
 
 function Assert-NotMatches([string]$Name, [string]$Content, [string]$Pattern) {
-    if ($Content -match $Pattern) {
-        $failures.Add("FAIL: $Name")
+    Assert-True $Name ($Content -notmatch $Pattern)
+}
+
+$config = Read-RepoFile 'config/_default/hugo.toml'
+$params = Read-RepoFile 'config/_default/params.toml'
+$search = Read-RepoFile 'content/page/search/index.md'
+$categories = Read-RepoFile 'content/categories/_index.md'
+$tags = Read-RepoFile 'content/tags/_index.md'
+$workflow = Read-RepoFile '.github/workflows/deploy.yml'
+$gitmodules = Read-RepoFile '.gitmodules'
+$customScript = Read-RepoFile 'assets/ts/custom.ts'
+$posts = @(Get-ChildItem (Join-Path $repoRoot 'content/post') -File -Filter '*.md')
+
+Assert-Matches '站点地址应指向 GitHub Pages 根域名' $config '(?m)^baseURL\s*=\s*"https://javakam\.github\.io/"'
+Assert-Matches '站点语言应使用 Hugo 新版 locale 配置' $config '(?m)^locale\s*=\s*"zh-cn"'
+Assert-Matches '站点应启用中文内容语言' $config '(?m)^defaultContentLanguage\s*=\s*"zh"'
+Assert-Matches '中文摘要应启用 CJK 处理' $config '(?m)^hasCJKLanguage\s*=\s*true'
+Assert-Matches '站点应使用 Stack 主题' $config '(?m)^theme\s*=\s*"hugo-theme-stack"'
+Assert-Matches '文章路径应保留旧站大小写' $config '(?m)^disablePathToLower\s*=\s*true'
+Assert-Matches '文章 URL 应兼容旧站日期路径' $config 'post\s*=\s*"/:year/:month/:day/:slug/"'
+Assert-Matches 'RSS 应继续输出到 feed.xml' $config '(?s)\[outputFormats\.RSS\].*?baseName\s*=\s*"feed"'
+Assert-Matches '首页应显示搜索组件' $params '(?s)\[widgets\].*?\{\s*type\s*=\s*"search"\s*\}'
+Assert-Matches '评论应默认关闭' $params '(?s)\[comments\].*?enabled\s*=\s*false'
+Assert-Matches '搜索页应生成 JSON 索引' $search '(?s)layout:\s*search.*?outputs:.*?-\s*json'
+Assert-Matches '分类页应兼容旧 category 路径' $categories '(?m)^\s*- /category/$'
+Assert-Matches '标签页应兼容旧 tag 路径' $tags '(?m)^\s*- /tag/$'
+Assert-Matches '部署工作流应构建 Hugo' $workflow '(?m)^\s*hugo\s*$'
+Assert-Matches '部署工作流应固定兼容 Stack 的 Hugo 版本' $workflow '(?m)^\s*HUGO_VERSION:\s*0\.164\.0$'
+Assert-Matches '部署工作流应发布 Pages artifact' $workflow 'actions/upload-pages-artifact@v5'
+Assert-Matches '主题应来自官方仓库' $gitmodules 'https://github\.com/CaiJimmy/hugo-theme-stack\.git'
+Assert-Matches '搜索摘要应清理截断产生的异常字符' $customScript 'removeUnpairedSurrogates'
+Assert-True '应完整迁移 30 篇 Markdown 文章' ($posts.Count -eq 30)
+
+$legacyPaths = @('_config.yml', '_includes', '_layouts', '_sass', 'page', 'index.html', 'feed.xml')
+foreach ($path in $legacyPaths) {
+    Assert-True "不应保留 Jekyll 路径 $path" (-not (Test-Path (Join-Path $repoRoot $path)))
+}
+
+$sourceFiles = @(
+    Get-ChildItem (Join-Path $repoRoot 'config') -Recurse -File
+    Get-ChildItem (Join-Path $repoRoot 'assets') -Recurse -File |
+        Where-Object { $_.Extension -in '.ts', '.js', '.scss', '.css' }
+    Get-ChildItem (Join-Path $repoRoot 'content') -Recurse -File
+    Get-ChildItem (Join-Path $repoRoot 'layouts') -Recurse -File
+    Get-ChildItem (Join-Path $repoRoot '.github') -Recurse -File
+)
+$allSource = ($sourceFiles | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName }) -join "`n"
+Assert-NotMatches '公开源码不应包含 OAuth clientSecret' $allSource '(?i)clientSecret\s*[:=]'
+Assert-NotMatches 'Hugo 内容不应包含 Jekyll Liquid 标签' $allSource '\{%|\{\{\s*(?:site|page|post)\.'
+Assert-NotMatches '内容不应引用 Windows 本地图片路径' $allSource '(?i)(?:src=["''][A-Z]:\\|\]\([A-Z]:\\)'
+Assert-NotMatches '内容不应使用 Kramdown 属性语法' $allSource '\{:[^}]+\}'
+
+foreach ($post in $posts) {
+    $text = Get-Content -Raw -LiteralPath $post.FullName
+    Assert-Matches "$($post.Name) 应包含有效 Front Matter" $text '\A---\r?\n(?s:.*?)\r?\n---\r?\n'
+    Assert-Matches "$($post.Name) 应包含日期" $text '(?m)^date:\s*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+08:00$'
+    Assert-Matches "$($post.Name) 应包含固定 slug" $text '(?m)^slug:\s*".+"$'
+    Assert-Matches "$($post.Name) 应包含固定旧站 URL" $text '(?m)^url:\s*"/.+/"$'
+    Assert-Matches "$($post.Name) 应包含分类数组" $text '(?m)^categories:\s*\[.+\]$'
+    Assert-Matches "$($post.Name) 应包含标签数组" $text '(?m)^tags:\s*\[.+\]$'
+
+    $dateMatch = [regex]::Match($text, '(?m)^date:\s*(?<date>\d{4}-\d{2}-\d{2})T')
+    $urlMatch = [regex]::Match($text, '(?m)^url:\s*"(?<url>/.+/)"$')
+    if ($dateMatch.Success -and $urlMatch.Success) {
+        $legacySlug = $post.BaseName -replace '^\d{4}-\d{2}-\d{2}-', ''
+        $legacySlug = ($legacySlug -replace '[（）]', '-').Trim('-')
+        $expectedUrl = "/$($dateMatch.Groups['date'].Value.Replace('-', '/'))/$legacySlug/"
+        Assert-True "$($post.Name) 应保留 Jekyll 旧链接" ($urlMatch.Groups['url'].Value -ceq $expectedUrl)
+    }
+
+    foreach ($match in [regex]::Matches($text, '(?m)(?:!\[[^\]]*\]\(|src=["''])/files/(?<path>[^)"''\r\n]+)')) {
+        $relativePath = [Uri]::UnescapeDataString($match.Groups['path'].Value)
+        Assert-True "$($post.Name) 引用的资源应存在: $relativePath" (Test-Path -LiteralPath (Join-Path $repoRoot "static/files/$relativePath"))
     }
 }
 
-$config = Read-RepoFile '_config.yml'
-$comments = Read-RepoFile '_includes/comments.html'
-$defaultLayout = Read-RepoFile '_layouts/default.html'
-$postLayout = Read-RepoFile '_layouts/post.html'
-$header = Read-RepoFile '_includes/header.html'
-$head = Read-RepoFile '_includes/head.html'
-$index = Read-RepoFile 'index.html'
-$feed = Read-RepoFile 'feed.xml'
-$pageContent = Read-RepoFile 'js/pageContent.js'
-$headerStyles = Read-RepoFile '_sass/_header.scss'
-$listingPages = @(
-    Read-RepoFile 'page/0archives.html'
-    Read-RepoFile 'page/1category.html'
-    Read-RepoFile 'page/2tags.html'
-)
-$sourcePaths = @('_includes', '_layouts', '_posts', 'js', 'page')
-$sourceFiles = foreach ($sourcePath in $sourcePaths) {
-    Get-ChildItem -LiteralPath (Join-Path $repoRoot $sourcePath) -Recurse -File
-}
-$sourceFiles += Get-ChildItem -LiteralPath $repoRoot -File |
-    Where-Object { $_.Extension -in '.html', '.md', '.js', '.yml', '.xml' }
-$allContent = $sourceFiles | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName }
-$allContent = $allContent -join "`n"
+if (Test-Path (Join-Path $repoRoot 'public')) {
+    $homeOutput = Read-RepoFile 'public/index.html'
+    Assert-NotMatches '构建产物不应依赖 Google Fonts' $homeOutput 'fonts\.googleapis\.com'
 
-Assert-NotMatches '公开源码不应包含 OAuth clientSecret' $allContent '(?i)clientSecret\s*:'
-Assert-NotMatches '公开源码不应包含注释中的 token' $comments '(?i)加一个\s+token'
-Assert-NotMatches '页面不应继续引用已关闭的评论模板' $allContent '\{\%\s*include\s+comments\.html\s*\%\}'
-Assert-NotMatches '文章不应引用 Windows 本地图片路径' $allContent '(?i)(?:src=["''][A-Z]:\\|\]\([A-Z]:\\)'
-Assert-NotMatches '文章不应使用易失效的 images 相对路径' $allContent 'src=["'']images/'
-Assert-NotMatches 'Markdown 图片路径中的圆括号应进行 URL 编码' $allContent '!\[[^\]]*\]\([^\r\n]*\([^\r\n]*\)'
-Assert-NotMatches '文章页不应加载 jQuery 1.7.2' $postLayout 'jquery-1\.7\.2'
-Assert-NotMatches '文章页不应加载 HTTP 脚本' $postLayout '<script[^>]+src=["'']http://'
-Assert-NotMatches '首页注释不应渲染完整摘要' $index '<!--\s*\{\{\s*post\.excerpt'
-Assert-Matches 'RSS 摘要应限制长度' $feed 'truncate:\s*300'
-Assert-Matches '站点 baseurl 应为空字符串' $config '(?m)^baseurl:\s*["'']["'']'
-Assert-Matches 'Jekyll 插件应使用 plugins 字段' $config '(?m)^plugins:'
-Assert-NotMatches 'Jekyll 配置不应继续使用 gems 字段' $config '(?m)^gems:'
-Assert-Matches '页面应声明中文语言' $defaultLayout '<html\s+lang=["'']zh-CN["'']>'
-Assert-Matches '移动菜单应有可访问名称' $header 'aria-label=["'']打开导航菜单["'']'
-foreach ($listingPage in $listingPages) {
-    Assert-Matches '列表页目录按钮应有可访问名称' $listingPage 'class=["'']anchor["''][^>]+aria-label='
+    $requiredOutput = @(
+        'index.html',
+        'feed.xml',
+        'archives/index.html',
+        'categories/index.html',
+        'tags/index.html',
+        'search/index.html',
+        'search/index.json',
+        'archive/index.html',
+        'category/index.html',
+        'tag/index.html',
+        '2019/09/23/markdown-toc-demo/index.html'
+    )
+    foreach ($path in $requiredOutput) {
+        Assert-True "构建产物应包含 $path" (Test-Path -LiteralPath (Join-Path $repoRoot "public/$path"))
+    }
+
+    $outputFiles = @(Get-ChildItem (Join-Path $repoRoot 'public') -Recurse -File | ForEach-Object {
+        $_.FullName.Substring((Join-Path $repoRoot 'public').Length + 1).Replace('\', '/')
+    })
+    foreach ($post in $posts) {
+        $text = Get-Content -Raw -LiteralPath $post.FullName
+        $urlMatch = [regex]::Match($text, '(?m)^url:\s*"(?<url>/.+/)"$')
+        if ($urlMatch.Success) {
+            $expectedOutput = $urlMatch.Groups['url'].Value.Trim('/') + '/index.html'
+            Assert-True "$($post.Name) 应按旧链接精确输出" ($outputFiles -ccontains $expectedOutput)
+        }
+    }
 }
-Assert-NotMatches '移动菜单按钮不应使用负层级' $headerStyles '\.menu\s*\{[\s\S]*?z-index:\s*-'
-Assert-Matches '站内资源应使用 relative_url' $head '\|\s*relative_url'
-Assert-Matches 'favicon 应使用 relative_url' $head "'/favicon\.ico'\s*\|\s*relative_url"
-Assert-Matches '复制 Markdown 目录后应启用平滑滚动' $pageContent "contentList\.querySelectorAll\('a'\)"
-Assert-Matches '文章目录应包含正文一级标题' $pageContent "document\.querySelectorAll\('article h1, article h2"
-Assert-Matches '移动目录选择链接后应关闭' $pageContent "contentList\.addEventListener\('click'"
-Assert-Matches '移动目录应支持 Escape 关闭' $pageContent "event\.key === 'Escape'"
-Assert-NotMatches '微信浏览器检测不应引用未定义的 ua2' $pageContent '\bua2\b'
 
 if ($failures.Count -gt 0) {
     $failures | ForEach-Object { Write-Error $_ -ErrorAction Continue }
     exit 1
 }
 
-Write-Host 'PASS: current site source audit (Git history is not checked)'
+Write-Host 'PASS: Hugo Stack migration audit'

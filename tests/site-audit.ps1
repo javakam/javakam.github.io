@@ -29,7 +29,16 @@ $tags = Read-RepoFile 'content/tags/_index.md'
 $workflow = Read-RepoFile '.github/workflows/deploy.yml'
 $gitmodules = Read-RepoFile '.gitmodules'
 $customScript = Read-RepoFile 'assets/ts/custom.ts'
+$archive = Read-RepoFile 'content/post/2019-12-23-早期学习记录归档.md'
 $posts = @(Get-ChildItem (Join-Path $repoRoot 'content/post') -File -Filter '*.md')
+$archiveAliases = @(
+    '/2019/09/23/first-github-blog/'
+    '/2019/10/14/学习计划/'
+    '/2019/10/16/Android高级01/'
+    '/2019/12/21/Android性能优化-一/'
+    '/2019/12/23/模板/'
+    '/2019/12/23/JVM指令手册/'
+)
 
 Assert-Matches '站点地址应指向 GitHub Pages 根域名' $config '(?m)^baseURL\s*=\s*"https://javakam\.github\.io/"'
 Assert-Matches '站点语言应使用 Hugo 新版 locale 配置' $config '(?m)^locale\s*=\s*"zh-cn"'
@@ -49,7 +58,11 @@ Assert-Matches '部署工作流应固定兼容 Stack 的 Hugo 版本' $workflow 
 Assert-Matches '部署工作流应发布 Pages artifact' $workflow 'actions/upload-pages-artifact@v5'
 Assert-Matches '主题应来自官方仓库' $gitmodules 'https://github\.com/CaiJimmy/hugo-theme-stack\.git'
 Assert-Matches '搜索摘要应清理截断产生的异常字符' $customScript 'removeUnpairedSurrogates'
-Assert-True '应完整迁移 30 篇 Markdown 文章' ($posts.Count -eq 30)
+Assert-True '清理后应保留 8 篇 Markdown 文章' ($posts.Count -eq 8)
+
+foreach ($alias in $archiveAliases) {
+    Assert-True "归档文章应接管旧地址 $alias" ($archive.Contains('"' + $alias + '"'))
+}
 
 $legacyPaths = @('_config.yml', '_includes', '_layouts', '_sass', 'page', 'index.html', 'feed.xml')
 foreach ($path in $legacyPaths) {
@@ -66,6 +79,8 @@ $sourceFiles = @(
 )
 $allSource = ($sourceFiles | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName }) -join "`n"
 Assert-NotMatches '公开源码不应包含 OAuth clientSecret' $allSource '(?i)clientSecret\s*[:=]'
+Assert-NotMatches '公开内容不应包含公网 root 数据库连接' $allSource '(?i)mysqli_connect\(\s*[''"](?:\d{1,3}\.){3}\d{1,3}(?::\d+)?[''"]\s*,\s*[''"]root[''"]'
+Assert-NotMatches '公开内容不应硬编码 Docker root 密码' $allSource '(?i)MYSQL_ROOT_PASSWORD=(?!\$\{|\$)[^\s`"'']+'
 Assert-NotMatches 'Hugo 内容不应包含 Jekyll Liquid 标签' $allSource '\{%|\{\{\s*(?:site|page|post)\.'
 Assert-NotMatches '内容不应引用 Windows 本地图片路径' $allSource '(?i)(?:src=["''][A-Z]:\\|\]\([A-Z]:\\)'
 Assert-NotMatches '内容不应使用 Kramdown 属性语法' $allSource '\{:[^}]+\}'
@@ -109,8 +124,10 @@ if (Test-Path (Join-Path $repoRoot 'public')) {
         'archive/index.html',
         'category/index.html',
         'tag/index.html',
-        '2019/09/23/markdown-toc-demo/index.html'
+        '2019/09/23/markdown-toc-demo/index.html',
+        '2019/12/23/早期学习记录归档/index.html'
     )
+    $requiredOutput += $archiveAliases | ForEach-Object { $_.Trim('/') + '/index.html' }
     foreach ($path in $requiredOutput) {
         Assert-True "构建产物应包含 $path" (Test-Path -LiteralPath (Join-Path $repoRoot "public/$path"))
     }

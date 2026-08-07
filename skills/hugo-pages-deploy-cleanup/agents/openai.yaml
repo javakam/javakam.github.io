@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hugo Pages Deploy Cleanup"
+  short_description: "Hugo Pages deployment, verification, and cleanup"
+  default_prompt: "Use $hugo-pages-deploy-cleanup to deploy this Hugo site, verify GitHub Pages, and clean every owned local artifact."

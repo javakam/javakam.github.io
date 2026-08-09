@@ -11,34 +11,64 @@
 
 <style>
     @media (min-width: 768px) {
-        .container.extended {
+        .container.extended:has(.article-content.relay-directory) {
             max-width: min(1760px, calc(100vw - 32px));
             --left-sidebar-max-width: 18%;
         }
     }
 
     @media (min-width: 1024px) {
-        .container.extended {
+        .container.extended:has(.article-content.relay-directory) {
             --left-sidebar-max-width: 14%;
             --right-sidebar-max-width: 20%;
         }
     }
 
     @media (min-width: 1440px) {
-        .container.extended {
+        .container.extended:has(.article-content.relay-directory) {
             --left-sidebar-max-width: 13%;
             --right-sidebar-max-width: 18%;
         }
     }
 
-    .article-content table td:nth-child(3),
-    .article-content table th:nth-child(3) {
+    .relay-directory {
+        --relay-accent: #228be6;
+        --relay-accent-background: #e7f5ff;
+        --relay-table-heading: #d7e6fe;
+    }
+
+    [data-scheme="dark"] .relay-directory {
+        --relay-accent: #74c0fc;
+        --relay-accent-background: rgba(34, 139, 230, 0.14);
+        --relay-table-heading: rgba(34, 139, 230, 0.22);
+    }
+
+    .relay-directory h2,
+    .relay-directory h3 {
+        color: var(--relay-accent);
+        border-left-color: var(--relay-accent);
+    }
+
+    .relay-directory blockquote {
+        border-left-color: var(--relay-accent);
+        background: var(--relay-accent-background);
+    }
+
+    .relay-directory table th {
+        background: var(--relay-table-heading);
+        color: var(--card-text-color-main);
+        font-weight: 600;
+    }
+
+    .relay-directory table td:nth-child(3),
+    .relay-directory table th:nth-child(3) {
         min-width: 32ch;
         overflow-wrap: anywhere;
         word-break: break-all;
     }
 
-    .article-content a[href^="http"] {
+    .relay-directory a[href^="http"] {
+        color: var(--relay-accent);
         overflow-wrap: anywhere;
         word-break: break-all;
     }

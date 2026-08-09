@@ -29,6 +29,9 @@ $tags = Read-RepoFile 'content/tags/_index.md'
 $workflow = Read-RepoFile '.github/workflows/deploy.yml'
 $gitmodules = Read-RepoFile '.gitmodules'
 $customScript = Read-RepoFile 'assets/ts/custom.ts'
+$customHead = Read-RepoFile 'layouts/_partials/head/custom.html'
+$articleContentPartial = Read-RepoFile 'layouts/_partials/article/components/content.html'
+$relayPost = Read-RepoFile 'content/post/2026-08-09-AI中转站清单2026年8月9日.md'
 $archive = Read-RepoFile 'content/post/2019-12-23-早期学习记录归档.md'
 $posts = @(Get-ChildItem (Join-Path $repoRoot 'content/post') -File -Filter '*.md')
 $archiveAliases = @(
@@ -58,6 +61,11 @@ Assert-Matches '部署工作流应固定兼容 Stack 的 Hugo 版本' $workflow 
 Assert-Matches '部署工作流应发布 Pages artifact' $workflow 'actions/upload-pages-artifact@v5'
 Assert-Matches '主题应来自官方仓库' $gitmodules 'https://github\.com/CaiJimmy/hugo-theme-stack\.git'
 Assert-Matches '搜索摘要应清理截断产生的异常字符' $customScript 'removeUnpairedSurrogates'
+Assert-Matches '中转站文章应启用专属内容样式' $relayPost '(?m)^content_class:\s*"relay-directory"$'
+Assert-Matches '文章内容局部应读取页面专属样式类' $articleContentPartial '\.Params\.content_class'
+Assert-Matches '文章内容局部应保留响应式表格包装' $articleContentPartial 'class=\\"table-wrapper\\"'
+Assert-Matches '中转站加宽规则应限定到专属内容类' $customHead '\.container\.extended:has\(\.article-content\.relay-directory\)'
+Assert-NotMatches '自定义样式不应直接覆盖所有扩展布局' $customHead '(?m)^\s*\.container\.extended\s*\{'
 Assert-True '清理后应保留 9 篇 Markdown 文章' ($posts.Count -eq 9)
 
 foreach ($alias in $archiveAliases) {

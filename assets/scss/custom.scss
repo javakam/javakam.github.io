@@ -1,0 +1,215 @@
+/*
+ * Visual skins use Stack's public CSS variables and leave its templates,
+ * responsive grid, components, and light/dark behavior unchanged.
+ */
+
+#visual-theme-switcher {
+    color: var(--body-text-color);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--menu-icon-separation);
+
+    &:focus-within {
+        color: var(--accent-color);
+    }
+
+    select {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: currentColor;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: 1.5;
+        padding: 0;
+        outline-offset: 4px;
+
+        option {
+            color: var(--card-text-color-main);
+            background-color: var(--card-background);
+        }
+    }
+}
+
+.theme-switcher__palette {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px !important;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+}
+
+.theme-switcher__swatch {
+    display: block;
+    min-width: 0;
+    border-radius: 2px;
+
+    &--stack {
+        background: #34495e;
+    }
+
+    &--ocean {
+        background: #2563eb;
+    }
+
+    &--forest {
+        background: #16805d;
+    }
+
+    &--graphite {
+        background: #6e7781;
+    }
+}
+
+:root[data-visual-theme="ocean"][data-scheme="light"] {
+    --body-background: #eef3f8;
+    --accent-color: #2563eb;
+    --accent-color-darker: #1d4ed8;
+    --accent-color-text: #fff;
+    --body-text-color: #5d6978;
+    --card-background: #fff;
+    --card-background-selected: #e5edf8;
+    --card-text-color-main: #162033;
+    --card-text-color-secondary: #536176;
+    --card-text-color-tertiary: #6f7d8f;
+    --card-separator-color: rgba(37, 99, 235, 0.14);
+    --blockquote-background-color: #eff6ff;
+    --link-background-color: 37, 99, 235;
+    --code-background-color: rgba(37, 99, 235, 0.1);
+    --code-text-color: #1d4ed8;
+    --table-border-color: #cbd8e8;
+    --tr-even-background-color: #f4f7fb;
+    --pre-text-color: #24292f;
+    --pre-background-color: #f6f8fa;
+    --card-border-radius: 8px;
+    --shadow-l1: 0 4px 10px rgba(35, 72, 120, 0.07), 0 0 1px rgba(35, 72, 120, 0.12);
+    --shadow-l2: 0 10px 24px rgba(35, 72, 120, 0.09), 0 2px 6px rgba(35, 72, 120, 0.06);
+}
+
+:root[data-visual-theme="ocean"][data-scheme="dark"] {
+    --body-background: #121a22;
+    --accent-color: #58a6ff;
+    --accent-color-darker: #79c0ff;
+    --accent-color-text: #08131f;
+    --body-text-color: #aebdca;
+    --card-background: #1b2631;
+    --card-background-selected: #263747;
+    --card-text-color-main: #eef6ff;
+    --card-text-color-secondary: #b9c8d7;
+    --card-text-color-tertiary: #8fa2b5;
+    --card-separator-color: rgba(88, 166, 255, 0.17);
+    --blockquote-background-color: rgba(88, 166, 255, 0.1);
+    --link-background-color: 88, 166, 255;
+    --code-background-color: rgba(88, 166, 255, 0.13);
+    --code-text-color: #79c0ff;
+    --table-border-color: #365069;
+    --tr-even-background-color: #223240;
+    --pre-text-color: #e6edf3;
+    --pre-background-color: #0d1117;
+    --card-border-radius: 8px;
+    --shadow-l1: 0 4px 12px rgba(0, 0, 0, 0.24), 0 0 1px rgba(88, 166, 255, 0.12);
+    --shadow-l2: 0 12px 28px rgba(0, 0, 0, 0.3), 0 0 1px rgba(88, 166, 255, 0.14);
+}
+
+:root[data-visual-theme="forest"][data-scheme="light"] {
+    --body-background: #edf4f1;
+    --accent-color: #147d64;
+    --accent-color-darker: #0f5e4c;
+    --accent-color-text: #fff;
+    --body-text-color: #596a64;
+    --card-background: #fff;
+    --card-background-selected: #deeee8;
+    --card-text-color-main: #18352c;
+    --card-text-color-secondary: #586d65;
+    --card-text-color-tertiary: #70847c;
+    --card-separator-color: rgba(20, 125, 100, 0.16);
+    --blockquote-background-color: #e7f4ef;
+    --link-background-color: 20, 125, 100;
+    --code-background-color: rgba(20, 125, 100, 0.1);
+    --code-text-color: #0f6b55;
+    --table-border-color: #c6ddd4;
+    --tr-even-background-color: #f0f7f4;
+    --pre-text-color: #17362c;
+    --pre-background-color: #f5faf8;
+    --card-border-radius: 8px;
+    --shadow-l1: 0 4px 10px rgba(28, 93, 72, 0.07), 0 0 1px rgba(28, 93, 72, 0.12);
+    --shadow-l2: 0 10px 24px rgba(28, 93, 72, 0.09), 0 2px 6px rgba(28, 93, 72, 0.06);
+}
+
+:root[data-visual-theme="forest"][data-scheme="dark"] {
+    --body-background: #151e1b;
+    --accent-color: #5ed0a4;
+    --accent-color-darker: #80dfbc;
+    --accent-color-text: #071710;
+    --body-text-color: #aec2ba;
+    --card-background: #202c28;
+    --card-background-selected: #2b3d36;
+    --card-text-color-main: #edf8f3;
+    --card-text-color-secondary: #b7cbc2;
+    --card-text-color-tertiary: #8fa59b;
+    --card-separator-color: rgba(94, 208, 164, 0.16);
+    --blockquote-background-color: rgba(94, 208, 164, 0.1);
+    --link-background-color: 94, 208, 164;
+    --code-background-color: rgba(94, 208, 164, 0.13);
+    --code-text-color: #80dfbc;
+    --table-border-color: #3b594e;
+    --tr-even-background-color: #293a34;
+    --pre-text-color: #e7f7f0;
+    --pre-background-color: #111815;
+    --card-border-radius: 8px;
+    --shadow-l1: 0 4px 12px rgba(0, 0, 0, 0.24), 0 0 1px rgba(94, 208, 164, 0.1);
+    --shadow-l2: 0 12px 28px rgba(0, 0, 0, 0.3), 0 0 1px rgba(94, 208, 164, 0.12);
+}
+
+:root[data-visual-theme="graphite"][data-scheme="light"] {
+    --body-background: #f1f3f5;
+    --accent-color: #24292f;
+    --accent-color-darker: #111418;
+    --accent-color-text: #fff;
+    --body-text-color: #636c76;
+    --card-background: #fff;
+    --card-background-selected: #e8ebee;
+    --card-text-color-main: #1f2328;
+    --card-text-color-secondary: #57606a;
+    --card-text-color-tertiary: #6e7781;
+    --card-separator-color: rgba(31, 35, 40, 0.13);
+    --blockquote-background-color: #f6f8fa;
+    --link-background-color: 87, 96, 106;
+    --code-background-color: rgba(31, 35, 40, 0.09);
+    --code-text-color: #424a53;
+    --table-border-color: #d0d7de;
+    --tr-even-background-color: #f6f8fa;
+    --pre-text-color: #24292f;
+    --pre-background-color: #f6f8fa;
+    --card-border-radius: 6px;
+    --shadow-l1: 0 2px 6px rgba(31, 35, 40, 0.06), 0 0 1px rgba(31, 35, 40, 0.1);
+    --shadow-l2: 0 8px 18px rgba(31, 35, 40, 0.09), 0 1px 3px rgba(31, 35, 40, 0.06);
+}
+
+:root[data-visual-theme="graphite"][data-scheme="dark"] {
+    --body-background: #16181b;
+    --accent-color: #f0f3f6;
+    --accent-color-darker: #d8dee4;
+    --accent-color-text: #17191c;
+    --body-text-color: #aeb5bd;
+    --card-background: #23262b;
+    --card-background-selected: #30343a;
+    --card-text-color-main: #f0f3f6;
+    --card-text-color-secondary: #bdc4cc;
+    --card-text-color-tertiary: #929aa3;
+    --card-separator-color: rgba(240, 243, 246, 0.13);
+    --blockquote-background-color: #2b2f34;
+    --link-background-color: 173, 181, 189;
+    --code-background-color: rgba(240, 243, 246, 0.1);
+    --code-text-color: #d8dee4;
+    --table-border-color: #454b53;
+    --tr-even-background-color: #2b2f34;
+    --pre-text-color: #f0f3f6;
+    --pre-background-color: #111315;
+    --card-border-radius: 6px;
+    --shadow-l1: 0 3px 9px rgba(0, 0, 0, 0.25), 0 0 1px rgba(240, 243, 246, 0.08);
+    --shadow-l2: 0 10px 24px rgba(0, 0, 0, 0.32), 0 0 1px rgba(240, 243, 246, 0.1);
+}

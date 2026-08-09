@@ -1,3 +1,20 @@
+<!-- Restore the selected Stack skin before the page is painted. -->
+<script>
+    (function () {
+        var storageKey = "StackVisualTheme";
+        var supportedThemes = ["ocean", "forest", "graphite"];
+
+        try {
+            var savedTheme = localStorage.getItem(storageKey);
+            if (supportedThemes.indexOf(savedTheme) !== -1) {
+                document.documentElement.dataset.visualTheme = savedTheme;
+            }
+        } catch (error) {
+            // Keep the original Stack theme when storage is unavailable.
+        }
+    }());
+</script>
+
 <!-- Preserve the existing Baidu Analytics property during the migration. -->
 <script>
     window._hmt = window._hmt || [];

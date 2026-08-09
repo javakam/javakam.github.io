@@ -8,3 +8,38 @@
         document.head.appendChild(script);
     }());
 </script>
+
+<style>
+    @media (min-width: 768px) {
+        .container.extended {
+            max-width: min(1760px, calc(100vw - 32px));
+            --left-sidebar-max-width: 18%;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .container.extended {
+            --left-sidebar-max-width: 14%;
+            --right-sidebar-max-width: 20%;
+        }
+    }
+
+    @media (min-width: 1440px) {
+        .container.extended {
+            --left-sidebar-max-width: 13%;
+            --right-sidebar-max-width: 18%;
+        }
+    }
+
+    .article-content table td:nth-child(3),
+    .article-content table th:nth-child(3) {
+        min-width: 32ch;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+    }
+
+    .article-content a[href^="http"] {
+        overflow-wrap: anywhere;
+        word-break: break-all;
+    }
+</style>

@@ -58,7 +58,7 @@ Assert-Matches '部署工作流应固定兼容 Stack 的 Hugo 版本' $workflow 
 Assert-Matches '部署工作流应发布 Pages artifact' $workflow 'actions/upload-pages-artifact@v5'
 Assert-Matches '主题应来自官方仓库' $gitmodules 'https://github\.com/CaiJimmy/hugo-theme-stack\.git'
 Assert-Matches '搜索摘要应清理截断产生的异常字符' $customScript 'removeUnpairedSurrogates'
-Assert-True '清理后应保留 8 篇 Markdown 文章' ($posts.Count -eq 8)
+Assert-True '清理后应保留 9 篇 Markdown 文章' ($posts.Count -eq 9)
 
 foreach ($alias in $archiveAliases) {
     Assert-True "归档文章应接管旧地址 $alias" ($archive.Contains('"' + $alias + '"'))

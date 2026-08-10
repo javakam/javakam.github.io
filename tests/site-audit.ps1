@@ -70,6 +70,7 @@ Assert-Matches '视觉主题应提供松石绿方案' $customStyle ':root\[data-
 Assert-Matches '视觉主题应提供极简石墨方案' $customStyle ':root\[data-visual-theme="graphite"\]\[data-scheme="light"\]'
 Assert-NotMatches 'Stack 原版不应被自定义变量覆盖' $customStyle 'data-visual-theme="stack"'
 Assert-Matches '中转站文章应启用专属内容样式' $relayPost '(?m)^content_class:\s*"relay-directory"$'
+Assert-Matches '中转站文章应记录持续更新源' $relayPost '(?m)^source_url:\s*"https://docs\.qq\.com/markdown/DQkthRnRnc2dNRGVo"$'
 Assert-Matches '文章内容局部应读取页面专属样式类' $articleContentPartial '\.Params\.content_class'
 Assert-Matches '文章内容局部应保留响应式表格包装' $articleContentPartial 'class=\\"table-wrapper\\"'
 Assert-Matches '中转站加宽规则应限定到专属内容类' $customHead '\.container\.extended:has\(\.article-content\.relay-directory\)'

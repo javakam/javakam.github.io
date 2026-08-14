@@ -63,8 +63,11 @@ Assert-Matches '部署工作流应发布 Pages artifact' $workflow 'actions/uplo
 Assert-Matches '主题应来自官方仓库' $gitmodules 'https://github\.com/CaiJimmy/hugo-theme-stack\.git'
 Assert-Matches '搜索摘要应清理截断产生的异常字符' $customScript 'removeUnpairedSurrogates'
 Assert-Matches '首屏应恢复用户选择的视觉主题' $customHead 'StackVisualTheme'
-Assert-Matches '侧栏应提供视觉主题选择器' $customScript 'visual-theme-switcher'
-Assert-Matches '视觉主题默认项应为 Stack 原版' $customScript "\{ value: 'stack', label: 'Stack 原版' \}"
+Assert-Matches '侧栏应提供按钮式视觉主题选择器' $customScript 'visual-theme-toggle'
+Assert-Matches '视觉主题应使用独立弹出面板' $customScript 'visual-theme-panel'
+Assert-Matches '视觉主题面板应支持键盘关闭' $customScript "event\.key === 'Escape'"
+Assert-NotMatches '视觉主题不应继续使用原生下拉框' $customScript "createElement\('select'\)|visual-theme-select"
+Assert-Matches '视觉主题默认项应为 Stack 原版' $customScript "\{ value: 'stack', label: 'Stack 原版'"
 Assert-Matches '视觉主题应提供海风蓝方案' $customStyle ':root\[data-visual-theme="ocean"\]\[data-scheme="light"\]'
 Assert-Matches '视觉主题应提供松石绿方案' $customStyle ':root\[data-visual-theme="forest"\]\[data-scheme="light"\]'
 Assert-Matches '视觉主题应提供极简石墨方案' $customStyle ':root\[data-visual-theme="graphite"\]\[data-scheme="light"\]'
@@ -74,6 +77,9 @@ Assert-Matches '中转站文章应记录持续更新源' $relayPost '(?m)^source
 Assert-Matches '文章内容局部应读取页面专属样式类' $articleContentPartial '\.Params\.content_class'
 Assert-Matches '文章内容局部应保留响应式表格包装' $articleContentPartial 'class=\\"table-wrapper\\"'
 Assert-Matches '中转站加宽规则应限定到专属内容类' $customHead '\.container\.extended:has\(\.article-content\.relay-directory\)'
+Assert-Matches '中转站强调色应跟随当前视觉主题' $customHead '--relay-accent:\s*var\(--accent-color\)'
+Assert-Matches '中转站表头应跟随当前视觉主题' $customHead '--relay-table-heading:\s*var\(--card-background-selected\)'
+Assert-NotMatches '中转站样式不应继续固定为蓝色' $customHead '--relay-accent:\s*#228be6'
 Assert-NotMatches '自定义样式不应直接覆盖所有扩展布局' $customHead '(?m)^\s*\.container\.extended\s*\{'
 Assert-True '清理后应保留 9 篇 Markdown 文章' ($posts.Count -eq 9)
 

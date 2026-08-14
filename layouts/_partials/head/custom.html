@@ -49,15 +49,9 @@
     }
 
     .relay-directory {
-        --relay-accent: #228be6;
-        --relay-accent-background: #e7f5ff;
-        --relay-table-heading: #d7e6fe;
-    }
-
-    [data-scheme="dark"] .relay-directory {
-        --relay-accent: #74c0fc;
-        --relay-accent-background: rgba(34, 139, 230, 0.14);
-        --relay-table-heading: rgba(34, 139, 230, 0.22);
+        --relay-accent: var(--accent-color);
+        --relay-accent-background: var(--blockquote-background-color);
+        --relay-table-heading: var(--card-background-selected);
     }
 
     .relay-directory h2,

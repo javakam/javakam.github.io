@@ -5,62 +5,170 @@
 
 #visual-theme-switcher {
     color: var(--body-text-color);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--menu-icon-separation);
+    display: flex;
 
     &:focus-within {
         color: var(--accent-color);
     }
+}
 
-    select {
-        width: 100%;
-        min-width: 0;
-        border: 0;
-        background: transparent;
-        color: currentColor;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: 1.5;
-        padding: 0;
+#visual-theme-toggle {
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--menu-icon-separation);
+    font: inherit;
+    line-height: 1.5;
+    padding: 0;
+    text-align: start;
+
+    &:focus-visible {
+        border-radius: 4px;
+        outline: 2px solid var(--accent-color);
         outline-offset: 4px;
+    }
 
-        option {
-            color: var(--card-text-color-main);
-            background-color: var(--card-background);
-        }
+}
+
+.theme-switcher__preview,
+.theme-picker__preview {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--card-separator-color);
+    background: var(--card-background);
+
+    i {
+        display: block;
+        min-width: 0;
     }
 }
 
-.theme-switcher__palette {
+.theme-switcher__preview {
     width: 20px;
     height: 20px;
     flex: 0 0 20px !important;
+    border-radius: 4px;
+}
+
+.theme-picker {
+    position: fixed;
+    z-index: 1000;
+    width: 244px;
+    padding: 8px;
+    border: 1px solid var(--card-separator-color);
+    border-radius: 8px;
+    background: var(--card-background);
+    color: var(--card-text-color-main);
+    box-shadow: var(--shadow-l2);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.theme-picker__title {
+    padding: 6px 10px 8px;
+    color: var(--card-text-color-tertiary);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.theme-picker__options {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 2px;
 }
 
-.theme-switcher__swatch {
-    display: block;
+.theme-picker__option {
+    appearance: none;
+    width: 100%;
     min-width: 0;
-    border-radius: 2px;
+    height: 48px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--card-text-color-main);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    font: inherit;
+    text-align: start;
 
-    &--stack {
-        background: #34495e;
+    &:hover,
+    &:focus-visible,
+    &.is-selected {
+        background: var(--card-background-selected);
     }
 
-    &--ocean {
-        background: #2563eb;
+    &:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+    }
+}
+
+.theme-picker__preview {
+    width: 36px;
+    height: 28px;
+    border-radius: 5px;
+}
+
+.theme-picker__label {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 1.35rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.theme-picker__check {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    opacity: 0;
+    text-align: center;
+
+    .is-selected & {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 767px) {
+    .theme-picker {
+        width: auto;
+        padding: 10px;
     }
 
-    &--forest {
-        background: #16805d;
+    .theme-picker__options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    &--graphite {
-        background: #6e7781;
+    .theme-picker__option {
+        grid-template-columns: 32px minmax(0, 1fr) 16px;
+        gap: 8px;
+        padding-inline: 8px;
+    }
+
+    .theme-picker__preview {
+        width: 32px;
+        height: 26px;
+    }
+}
+
+@media (max-width: 359px) {
+    .theme-picker__options {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 

@@ -40,7 +40,7 @@ if (searchResults) {
     }).observe(searchResults, { childList: true });
 }
 
-type VisualTheme = 'stack' | 'ocean' | 'forest' | 'graphite';
+type VisualTheme = 'stack' | 'ocean' | 'forest' | 'graphite' | 'primer' | 'catppuccin';
 
 const VISUAL_THEME_STORAGE_KEY = 'StackVisualTheme';
 const visualThemes: Array<{ value: VisualTheme; label: string; colors: string[] }> = [
@@ -48,6 +48,8 @@ const visualThemes: Array<{ value: VisualTheme; label: string; colors: string[] 
     { value: 'ocean', label: '海风蓝', colors: ['#eef3f8', '#2563eb', '#ffffff', '#536176'] },
     { value: 'forest', label: '松石绿', colors: ['#edf4f1', '#147d64', '#ffffff', '#586d65'] },
     { value: 'graphite', label: '极简石墨', colors: ['#f1f3f5', '#24292f', '#ffffff', '#6e7781'] },
+    { value: 'primer', label: 'GitHub Primer', colors: ['#f6f8fa', '#0969da', '#ffffff', '#59636e'] },
+    { value: 'catppuccin', label: 'Catppuccin', colors: ['#eff1f5', '#1e66f5', '#e6e9ef', '#4c4f69'] },
 ];
 
 let visualThemeToggle: HTMLButtonElement | null = null;

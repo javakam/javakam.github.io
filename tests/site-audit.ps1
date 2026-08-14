@@ -71,6 +71,11 @@ Assert-Matches '视觉主题默认项应为 Stack 原版' $customScript "\{ valu
 Assert-Matches '视觉主题应提供海风蓝方案' $customStyle ':root\[data-visual-theme="ocean"\]\[data-scheme="light"\]'
 Assert-Matches '视觉主题应提供松石绿方案' $customStyle ':root\[data-visual-theme="forest"\]\[data-scheme="light"\]'
 Assert-Matches '视觉主题应提供极简石墨方案' $customStyle ':root\[data-visual-theme="graphite"\]\[data-scheme="light"\]'
+Assert-Matches '视觉主题应提供 GitHub Primer 方案' $customScript "\{ value: 'primer', label: 'GitHub Primer'"
+Assert-Matches 'GitHub Primer 方案应同时支持明暗模式' $customStyle ':root\[data-visual-theme="primer"\]\[data-scheme="(?:light|dark)"\]'
+Assert-Matches '视觉主题应提供 Catppuccin 方案' $customScript "\{ value: 'catppuccin', label: 'Catppuccin'"
+Assert-Matches 'Catppuccin 方案应同时支持明暗模式' $customStyle ':root\[data-visual-theme="catppuccin"\]\[data-scheme="(?:light|dark)"\]'
+Assert-Matches '首屏主题恢复应识别新增视觉主题' $customHead '"primer", "catppuccin"'
 Assert-NotMatches 'Stack 原版不应被自定义变量覆盖' $customStyle 'data-visual-theme="stack"'
 Assert-Matches '中转站文章应启用专属内容样式' $relayPost '(?m)^content_class:\s*"relay-directory"$'
 Assert-Matches '中转站文章应记录持续更新源' $relayPost '(?m)^source_url:\s*"https://docs\.qq\.com/markdown/DQkthRnRnc2dNRGVo"$'
